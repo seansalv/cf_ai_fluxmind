@@ -47,9 +47,9 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
-    // Initialize Workers AI provider with Llama 3.3
+    // Initialize Workers AI provider with Llama 3.1 (more stable for longer responses)
     const workersAI = createWorkersAI({ binding: this.env.AI });
-    const model = workersAI("@cf/meta/llama-3.3-70b-instruct-fp8-fast");
+    const model = workersAI("@cf/meta/llama-3.1-70b-instruct");
 
     const stream = createUIMessageStream({
       execute: async ({ writer }) => {
@@ -60,7 +60,7 @@ export class Chat extends AIChatAgent<Env> {
           system: STUDY_ASSISTANT_PROMPT,
           messages: convertToModelMessages(cleanedMessages),
           model,
-          maxTokens: 2048, // Allow longer responses
+          maxTokens: 4096, // Allow much longer responses
           onFinish,
           stopWhen: stepCountIs(10)
         });
