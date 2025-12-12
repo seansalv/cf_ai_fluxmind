@@ -6,6 +6,12 @@
 
 FluxMind is an AI-powered personal study assistant built entirely on Cloudflare's platform. It leverages **Llama 3.3** running on **Workers AI** for intelligent responses, **Durable Objects** for persistent state and real-time communication, and a modern React frontend.
 
+## 🌐 Live Demo
+
+**Deployed Application**: [https://cf-ai-fluxmind.sean1-salvador1.workers.dev](https://cf-ai-fluxmind.sean1-salvador1.workers.dev)
+
+Try it out! Ask questions, create flashcards, or get study tips.
+
 ## 🎯 Features
 
 - **💬 Real-time Chat**: WebSocket-based chat interface with streaming AI responses
