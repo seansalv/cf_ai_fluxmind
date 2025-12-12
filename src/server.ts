@@ -1,5 +1,4 @@
 import { routeAgentRequest, type Schedule } from "agents";
-import { getSchedulePrompt } from "agents/schedule";
 import { AIChatAgent } from "agents/ai-chat-agent";
 import {
   generateId,
@@ -12,8 +11,7 @@ import {
   type ToolSet
 } from "ai";
 import { createWorkersAI } from "workers-ai-provider";
-import { processToolCalls, cleanupMessages } from "./utils";
-import { tools, executions } from "./tools";
+import { cleanupMessages } from "./utils";
 
 /**
  * FluxMind Study Agent - A personal AI study assistant
@@ -21,21 +19,21 @@ import { tools, executions } from "./tools";
  */
 
 // System prompt for the study assistant
-const STUDY_ASSISTANT_PROMPT = `You are FluxMind, a friendly and knowledgeable AI study assistant. Your role is to help users learn effectively by:
+const STUDY_ASSISTANT_PROMPT = `You are FluxMind, a friendly and knowledgeable AI study assistant. Your role is to help users learn effectively.
 
-1. **Explaining Concepts**: Break down complex topics into easy-to-understand explanations
-2. **Creating Study Materials**: Generate flashcards, summaries, and practice questions
-3. **Answering Questions**: Provide clear, accurate answers with examples when helpful
-4. **Encouraging Learning**: Be supportive and motivating while maintaining academic rigor
+When a user asks you a question:
+1. Provide a clear, helpful explanation
+2. Use examples when appropriate
+3. Break down complex topics into simpler parts
+4. Be encouraging and supportive
 
-Guidelines:
-- Use clear, concise language appropriate for the topic
-- Provide examples when explaining abstract concepts
-- When asked about a topic, structure your response with headers and bullet points for readability
-- If you don't know something, admit it honestly
-- Encourage curiosity and deeper exploration of topics
+You can help with:
+- Explaining any topic or concept
+- Creating study materials and flashcards
+- Providing study tips
+- Answering questions about any subject
 
-You have access to tools that can help with scheduling study sessions and other tasks.`;
+Always respond directly and helpfully to the user's question. Do not ask for clarification unless absolutely necessary. Just answer the question to the best of your ability.`;
 
 /**
  * Chat Agent implementation that handles real-time AI chat interactions
@@ -53,39 +51,16 @@ export class Chat extends AIChatAgent<Env> {
     const workersAI = createWorkersAI({ binding: this.env.AI });
     const model = workersAI("@cf/meta/llama-3.3-70b-instruct-fp8-fast");
 
-    // Collect all tools, including MCP tools
-    const allTools = {
-      ...tools,
-      ...this.mcp.getAITools()
-    };
-
     const stream = createUIMessageStream({
       execute: async ({ writer }) => {
         // Clean up incomplete tool calls to prevent API errors
         const cleanedMessages = cleanupMessages(this.messages);
 
-        // Process any pending tool calls from previous messages
-        // This handles human-in-the-loop confirmations for tools
-        const processedMessages = await processToolCalls({
-          messages: cleanedMessages,
-          dataStream: writer,
-          tools: allTools,
-          executions
-        });
-
         const result = streamText({
-          system: `${STUDY_ASSISTANT_PROMPT}
-
-${getSchedulePrompt({ date: new Date() })}
-
-If the user asks to schedule a study session or task, use the schedule tool to schedule it.
-`,
-          messages: convertToModelMessages(processedMessages),
+          system: STUDY_ASSISTANT_PROMPT,
+          messages: convertToModelMessages(cleanedMessages),
           model,
-          tools: allTools,
-          onFinish: onFinish as unknown as StreamTextOnFinishCallback<
-            typeof allTools
-          >,
+          onFinish,
           stopWhen: stepCountIs(10)
         });
 
