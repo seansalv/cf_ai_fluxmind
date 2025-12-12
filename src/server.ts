@@ -4,7 +4,6 @@ import {
   generateId,
   streamText,
   type StreamTextOnFinishCallback,
-  stepCountIs,
   createUIMessageStream,
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -43,9 +42,10 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
-    // Initialize Workers AI provider with Llama 3.1 8B (faster and more reliable)
+    // Initialize Workers AI provider with Llama 3.3 70B
     const workersAI = createWorkersAI({ binding: this.env.AI });
-    const model = workersAI("@cf/meta/llama-3.1-8b-instruct");
+    // @ts-expect-error - model name is valid but not in types yet
+    const model = workersAI("@cf/meta/llama-3.3-70b-instruct-fp8-fast");
 
     const stream = createUIMessageStream({
       execute: async ({ writer }) => {
@@ -56,9 +56,7 @@ export class Chat extends AIChatAgent<Env> {
           system: STUDY_ASSISTANT_PROMPT,
           messages: convertToModelMessages(cleanedMessages),
           model,
-          maxTokens: 4096, // Allow much longer responses
-          onFinish,
-          stopWhen: stepCountIs(10)
+          onFinish
         });
 
         writer.merge(result.toUIMessageStream());
