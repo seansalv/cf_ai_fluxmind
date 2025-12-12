@@ -60,6 +60,7 @@ export class Chat extends AIChatAgent<Env> {
           system: STUDY_ASSISTANT_PROMPT,
           messages: convertToModelMessages(cleanedMessages),
           model,
+          maxTokens: 2048, // Allow longer responses
           onFinish,
           stopWhen: stepCountIs(10)
         });
