@@ -1,30 +1,5 @@
 # AI Prompts Used in Development
 
-This document contains the AI prompts used during the development of FluxMind, as required by the assignment guidelines.
-
-## Initial Project Planning Prompt
-
-```
-I'm tasked with the following for a cloudflare optional assignment:
-Optional Assignment: See instructions below for Cloudflare AI app assignment. SUBMIT GitHub repo URL for the AI project here.
-
-Optional Assignment Instructions: We plan to fast track review of candidates who complete an assignment to build a type of AI-powered application on Cloudflare. An AI-powered application should include the following components:
-- LLM (recommend using Llama 3.3 on Workers AI), or an external LLM of your choice
-- Workflow / coordination (recommend using Workflows, Workers or Durable Objects)
-- User input via chat or voice (recommend using Pages or Realtime)
-- Memory or state
-
-visit the following site for more information on this project: https://agents.cloudflare.com/ then, additional documentation will be here: https://developers.cloudflare.com/agents/
-
-before implementing any type of code, please explain how you want to implement this, how we can implement this, etc. I would like to get into cloudflare
-```
-
-## Project Scaffolding Prompt
-
-```
-i would like to go with option a, as i simply want to have a baseline submission for this. i do have a cloudflare account, node js, but fluxmind study agent would be fine. nothing complex should be input, a simple submittable project. if you need anything please tell me
-```
-
 ## System Prompt for FluxMind AI Assistant
 
 The following system prompt is used in `src/server.ts` to define the AI assistant's behavior:
